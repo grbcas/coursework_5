@@ -3,6 +3,11 @@ from src.config import config
 
 
 def create_db(params: dict):
+    """
+    creation db: hh
+    :param params:
+    :return:
+    """
     # print(create_db, params)
     params['dbname'] = 'postgres'
     con = psycopg2.connect(**params)
@@ -27,6 +32,11 @@ def create_db(params: dict):
 
 
 def create_tables(params: dict):
+    """
+    creation tables in db hh
+    :param params:
+    :return:
+    """
     params['dbname'] = 'hh'
     # print(create_tables, params)
     con = psycopg2.connect(**params)
@@ -56,7 +66,7 @@ def create_tables(params: dict):
 
 def save_data_to_db(data: list[dict[str, any]], params: dict):
     """
-    save data to the DB
+    save data in the DB HH,
     :param params:
     :param database_name:
     :param data:
@@ -64,9 +74,9 @@ def save_data_to_db(data: list[dict[str, any]], params: dict):
     """
     con = psycopg2.connect(**params)
     # print(save_data_to_db, params)
-    # print(data)
     with con.cursor() as cur:
         con.autocommit = True
+        # get uniq employer_id, employer_name from data
         ids = set()
         names = set()
         for employer in data:
@@ -103,5 +113,4 @@ if __name__ == '__main__':
             {'vacancy_id': '84180918', 'profession': 'Back-End разработчик', 'salary': 0, 'link': 'https://hh.ru/vacancy/84180918', 'currency': 'RUB', 'employer_id': '4155490', 'employer_name': 'AVR Group'},
             {'vacancy_id': '83902101', 'profession': 'Junior Data Scientist (стажер)', 'salary': 50000, 'link': 'https://hh.ru/vacancy/83902101', 'currency': 'RUR', 'employer_id': '4768936', 'employer_name': 'А17'}]
     save_data_to_db(data, db_params)
-    # for employer in data:
-    #     print(int(employer['employer_id']), employer['employer_name'])
+

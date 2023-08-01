@@ -4,11 +4,14 @@ import requests
 class Vacancy:
 	"""
 	Класс для работы с вакансиями.
-	Определить атрибуты:
+	аттрибуты:
+	id вакансии,
 	название вакансии,
 	ссылка на вакансию,
 	зарплата,
-	валюта зарплаты
+	валюта зарплаты,
+	id работодателя,
+	название работодателя.
 	Методы сравнения вакансий между собой по зарплате
 	и валидировать данные, которыми инициализируются его атрибуты
 	"""
@@ -56,6 +59,11 @@ class Vacancy:
 
 	@staticmethod
 	def get_exchange_rate(currency):
+		"""
+		get current exchange rate from cbr
+		:param currency:
+		:return: exchange rate
+		"""
 		rate = requests.get('https://www.cbr-xml-daily.ru/daily_json.js').json()
 		value = rate['Valute'][currency.upper()]['Value']
 		nominal = rate['Valute'][currency.upper()]['Nominal']

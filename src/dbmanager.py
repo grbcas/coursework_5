@@ -22,6 +22,10 @@ class DBManager:
         self.params = params
 
     def connect(self):
+        """
+        create connection to a DB
+        :return: connection
+        """
         try:
             conn = psycopg2.connect(**self.params)
             return conn
@@ -31,6 +35,10 @@ class DBManager:
         #     conn.close()
 
     def get_companies_and_vacancies_count(self):
+        """
+        sql request
+        :return:
+        """
         with self.connect().cursor() as cur:
             postgres_select_query = \
                 """
@@ -47,6 +55,10 @@ class DBManager:
         return select_output
 
     def get_all_vacancies(self):
+        """
+        sql request
+        :return:
+        """
         with self.connect().cursor() as cur:
             postgres_select_query = \
                 """
@@ -62,6 +74,10 @@ class DBManager:
         return select_output
 
     def get_avg_salary(self):
+        """
+        sql request
+        :return:
+        """
         with self.connect().cursor() as cur:
             postgres_select_query = \
                 """
@@ -77,6 +93,10 @@ class DBManager:
         return select_output
 
     def get_vacancies_with_higher_salary(self):
+        """
+        sql request
+        :return:
+        """
         with self.connect().cursor() as cur:
             postgres_select_query = \
                 """
@@ -95,6 +115,11 @@ class DBManager:
         return select_output
 
     def get_vacancies_with_keyword(self, keyword):
+        """
+        sql request
+        :param keyword:
+        :return:
+        """
         with self.connect().cursor() as cur:
             postgres_select_query = \
                 f"""
