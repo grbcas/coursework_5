@@ -1,9 +1,10 @@
 import psycopg2
-from config import config
-
+from src.config import config
 
 
 def create_db(params: dict):
+    # print(create_db, params)
+    params['dbname'] = 'postgres'
     con = psycopg2.connect(**params)
     con.autocommit = True
     with con.cursor() as cur:
@@ -24,7 +25,11 @@ def create_db(params: dict):
         )
     con.close()
 
-    con = psycopg2.connect(dbname='hh', **params)
+
+def create_tables(params: dict):
+    params['dbname'] = 'hh'
+    # print(create_tables, params)
+    con = psycopg2.connect(**params)
     con.autocommit = True
     with con.cursor() as cur:
         cur.execute(
@@ -49,7 +54,7 @@ def create_db(params: dict):
     con.close()
 
 
-def save_data_to_db(data: list[dict[str, any]], params: dict, database_name='hh'):
+def save_data_to_db(data: list[dict[str, any]], params: dict):
     """
     save data to the DB
     :param params:
@@ -57,17 +62,26 @@ def save_data_to_db(data: list[dict[str, any]], params: dict, database_name='hh'
     :param data:
     :return: none
     """
-    con = psycopg2.connect(**params, dbname=database_name)
-    print(data)
+    con = psycopg2.connect(**params)
+    # print(save_data_to_db, params)
+    # print(data)
     with con.cursor() as cur:
         con.autocommit = True
+        ids = set()
+        names = set()
         for employer in data:
+            ids.add(employer['employer_id'])
+            names.add(employer['employer_name'])
+
+        employers = zip(ids, names)
+
+        for employer in employers:
             cur.execute(
                 """
                 insert into employers (employer_id, employer_name)
                 values(%s, %s);
                 """,
-                (int(employer['employer_id']), employer['employer_name'])
+                (int(employer[0]), employer[1])
             )
         for vacancy in data:
             cur.execute(
@@ -76,7 +90,7 @@ def save_data_to_db(data: list[dict[str, any]], params: dict, database_name='hh'
                 values(%s, %s, %s, %s, %s);
                 """,
                 (int(vacancy['vacancy_id']), vacancy['profession'],
-                 int(vacancy['salary']), vacancy['link'], int(vacancy['employer_id']))
+                 int(vacancy['_salary']), vacancy['link'], int(vacancy['employer_id']))
             )
     con.close()
 
@@ -89,5 +103,5 @@ if __name__ == '__main__':
             {'vacancy_id': '84180918', 'profession': 'Back-End разработчик', 'salary': 0, 'link': 'https://hh.ru/vacancy/84180918', 'currency': 'RUB', 'employer_id': '4155490', 'employer_name': 'AVR Group'},
             {'vacancy_id': '83902101', 'profession': 'Junior Data Scientist (стажер)', 'salary': 50000, 'link': 'https://hh.ru/vacancy/83902101', 'currency': 'RUR', 'employer_id': '4768936', 'employer_name': 'А17'}]
     save_data_to_db(data, db_params)
-    for employer in data:
-        print(int(employer['employer_id']), employer['employer_name'])
+    # for employer in data:
+    #     print(int(employer['employer_id']), employer['employer_name'])

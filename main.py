@@ -1,20 +1,45 @@
-from config import config
-from src.api import *
-from src.db_utils import *
+from src.config import config
+from src.api import ParserHH
+from src.db_utils import create_db, create_tables, save_data_to_db
+from src.dbmanager import DBManager
+from src.vacancy import Vacancy
 
-db_params = config()
-create_db(db_params)
-data = [{'vacancy_id': '84201801', 'profession': 'Разработчик python', 'salary': 2500,
-         'link': 'https://hh.ru/vacancy/84201801', 'currency': 'BYR', 'employer_id': '9417901',
-         'employer_name': 'Олихвер В. В.'},
-        {'vacancy_id': '83618124', 'profession': 'Junior Backend developer (Python)', 'salary': 0,
-         'link': 'https://hh.ru/vacancy/83618124', 'currency': 'RUB', 'employer_id': '9113528',
-         'employer_name': 'Effective Mobile'},
-        {'vacancy_id': '84180918', 'profession': 'Back-End разработчик', 'salary': 0,
-         'link': 'https://hh.ru/vacancy/84180918', 'currency': 'RUB', 'employer_id': '4155490',
-         'employer_name': 'AVR Group'},
-        {'vacancy_id': '83902101', 'profession': 'Junior Data Scientist (стажер)', 'salary': 50000,
-         'link': 'https://hh.ru/vacancy/83902101', 'currency': 'RUR', 'employer_id': '4768936', 'employer_name': 'А17'}]
-save_data_to_db(data, db_params)
-for employer in data:
-    print(int(employer['employer_id']), employer['employer_name'])
+param_create_db = config()
+
+create_db(param_create_db)
+
+params = config()
+create_tables(params)
+parser_hh = ParserHH()
+data = parser_hh.get_vacancy()
+
+vacancies = []
+for i_vacancy in data:
+    vacancy_id = i_vacancy['vacancy_id']
+    profession = i_vacancy['profession']
+    salary = i_vacancy['salary']
+    link = i_vacancy['link']
+    currency = i_vacancy['currency']
+    employer_id = i_vacancy['employer_id']
+    employer_name = i_vacancy['employer_name']
+    vacancies.append(Vacancy(vacancy_id, profession, salary, link, currency, employer_id, employer_name))
+
+vacancies_to_db = []
+for i_vacancy in vacancies:
+    vacancies_to_db.append(i_vacancy.__dict__)
+
+# print(vacancies_to_db)
+save_data_to_db(vacancies_to_db, params)
+
+d = DBManager(params)
+r1 = d.get_companies_and_vacancies_count()
+r2 = d.get_all_vacancies()
+r3 = d.get_avg_salary()
+r4 = d.get_vacancies_with_higher_salary()
+r5 = d.get_vacancies_with_keyword('python')
+print(r1)
+print(r2)
+print(r3)
+print(r4)
+print(r5)
+d.connect().close()
