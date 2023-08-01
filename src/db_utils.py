@@ -77,22 +77,33 @@ def save_data_to_db(data: list[dict[str, any]], params: dict):
     with con.cursor() as cur:
         con.autocommit = True
         # get uniq employer_id, employer_name from data
-        ids = set()
-        names = set()
+        # ids = set()
+        # names = set()
+        # for employer in data:
+        #     ids.add(employer['employer_id'])
+        #     names.add(employer['employer_name'])
+        #
+        # employers = zip(ids, names)
+
+        # for employer in employers:
+        #     cur.execute(
+        #         """
+        #         insert into employers (employer_id, employer_name)
+        #         values(%s, %s);
+        #         """,
+        #         (int(employer[0]), employer[1])
+        #     )
+
         for employer in data:
-            ids.add(employer['employer_id'])
-            names.add(employer['employer_name'])
-
-        employers = zip(ids, names)
-
-        for employer in employers:
             cur.execute(
                 """
                 insert into employers (employer_id, employer_name)
-                values(%s, %s);
+                values(%s, %s)
+                on conflict on constraint employers_pkey do nothing;
                 """,
-                (int(employer[0]), employer[1])
+                (int(employer['employer_id']), employer['employer_name'])
             )
+
         for vacancy in data:
             cur.execute(
                 """
