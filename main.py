@@ -3,7 +3,8 @@ from src.api import ParserHH
 from src.db_utils import create_db, create_tables, save_data_to_db
 from src.dbmanager import DBManager
 from src.vacancy import Vacancy
-
+import json
+from pathlib import Path
 
 def main():
     param_create_db = config()
@@ -12,11 +13,18 @@ def main():
 
     params = config()
     create_tables(params)
-    parser_hh = ParserHH()
-    data = parser_hh.get_vacancy()
+
+    path = Path(Path(__file__).parent, 'employers.txt')
+    with open(path, encoding='utf8') as json_file:
+        employers = json.load(json_file)
+
+    hh_data = []
+    for employer_name, employer_id in employers.items():
+        vacancy = ParserHH(employer_id).get_vacancy()
+        hh_data.extend(vacancy)
 
     vacancies = []
-    for i_vacancy in data:
+    for i_vacancy in hh_data:
         vacancy_id = i_vacancy['vacancy_id']
         profession = i_vacancy['profession']
         salary = i_vacancy['salary']
