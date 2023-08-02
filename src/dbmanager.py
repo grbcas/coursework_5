@@ -114,7 +114,7 @@ class DBManager:
         self.connect().commit()
         return select_output
 
-    def get_vacancies_with_keyword(self, keyword):
+    def get_vacancies_with_keyword(self, keyword: str):
         """
         sql request
         :param keyword:
