@@ -4,8 +4,8 @@ from src.config import config
 
 def create_db(params: dict):
     """
-    creation db: hh
-    :param params:
+    creates a new db "hh", if it exists it will be dropped and created again
+    :param params: uses connection to the db 'postgres'
     :return:
     """
     # print(create_db, params)
